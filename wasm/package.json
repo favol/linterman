@@ -1,0 +1,13 @@
+{
+  "name": "postman-linter-core",
+  "description": "Moteur de linting Rust pour collections Postman",
+  "version": "1.0.0",
+  "license": "MIT",
+  "files": [
+    "postman_linter_core_bg.wasm",
+    "postman_linter_core.js",
+    "postman_linter_core.d.ts"
+  ],
+  "main": "postman_linter_core.js",
+  "types": "postman_linter_core.d.ts"
+}

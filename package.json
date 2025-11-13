@@ -1,0 +1,50 @@
+{
+  "name": "@postman-linter/linter-wasm",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "description": "Wrapper TypeScript pour le moteur de linting Rust/WASM",
+  "author": "Vincent Fasciaux",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/favol/lintermanSAAS.git",
+    "directory": "packages/linter-wasm"
+  },
+  "keywords": [
+    "postman",
+    "linter",
+    "wasm",
+    "api",
+    "testing"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "wasm",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "npm run copy-wasm && tsc",
+    "copy-wasm": "mkdir -p wasm && cp -r ../core-linter-rs/pkg-node/* wasm/",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist wasm"
+  },
+  "dependencies": {
+    "@postman-linter/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  }
+}
