@@ -9,6 +9,7 @@ export type { LintConfig, LintResult, LintIssue, LintStats } from '@postman-lint
 
 interface WasmModule {
   lint(collection_json: string, config_json: string): string;
+  lint_and_fix(collection_json: string, config_json: string): string;
 }
 
 // ============================================================================
@@ -156,6 +157,86 @@ export function lintSync(
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Linting failed: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Analyse et corrige automatiquement une collection Postman
+ * 
+ * @param collection - Collection Postman (objet JSON)
+ * @param config - Configuration du linter (optionnel)
+ * @returns Résultat avec collection corrigée et statistiques
+ * 
+ * @example
+ * ```typescript
+ * import { initWasm, lintAndFix } from '@postman-linter/linter-wasm';
+ * 
+ * await initWasm();
+ * 
+ * const result = await lintAndFix(collection);
+ * console.log(`Fixes applied: ${result.fixes_applied}`);
+ * console.log(`Score: ${result.before.score}% → ${result.after.score}%`);
+ * ```
+ */
+export async function lintAndFix(
+  collection: unknown,
+  config: Partial<LintConfig> = {}
+): Promise<any> {
+  // Initialiser WASM si nécessaire
+  if (!wasmModule) {
+    await initWasm();
+  }
+
+  if (!wasmModule) {
+    throw new Error('WASM module not initialized. Call initWasm() first.');
+  }
+
+  const validatedConfig = LintConfigSchema.parse({
+    local_only: true,
+    fix: true,
+    ...config,
+  });
+
+  try {
+    const collectionJson = JSON.stringify(collection);
+    const configJson = JSON.stringify(validatedConfig);
+    const resultJson = wasmModule.lint_and_fix(collectionJson, configJson);
+    return JSON.parse(resultJson);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Auto-fix failed: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+/**
+ * Version synchrone de lintAndFix (Node.js uniquement)
+ */
+export function lintAndFixSync(
+  collection: unknown,
+  config: Partial<LintConfig> = {}
+): any {
+  if (!wasmModule) {
+    throw new Error('WASM module not initialized. Call initWasm() first.');
+  }
+
+  const validatedConfig = LintConfigSchema.parse({
+    local_only: true,
+    fix: true,
+    ...config,
+  });
+
+  try {
+    const collectionJson = JSON.stringify(collection);
+    const configJson = JSON.stringify(validatedConfig);
+    const resultJson = wasmModule.lint_and_fix(collectionJson, configJson);
+    return JSON.parse(resultJson);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Auto-fix failed: ${error.message}`);
     }
     throw error;
   }
