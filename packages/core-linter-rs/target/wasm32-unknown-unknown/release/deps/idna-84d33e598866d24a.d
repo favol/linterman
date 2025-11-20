@@ -1,0 +1,10 @@
+/Users/vincentfasciaux/Projects/lintermanSAAS/packages/core-linter-rs/target/wasm32-unknown-unknown/release/deps/idna-84d33e598866d24a.d: /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/lib.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/deprecated.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/punycode.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/uts46.rs
+
+/Users/vincentfasciaux/Projects/lintermanSAAS/packages/core-linter-rs/target/wasm32-unknown-unknown/release/deps/libidna-84d33e598866d24a.rlib: /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/lib.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/deprecated.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/punycode.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/uts46.rs
+
+/Users/vincentfasciaux/Projects/lintermanSAAS/packages/core-linter-rs/target/wasm32-unknown-unknown/release/deps/libidna-84d33e598866d24a.rmeta: /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/lib.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/deprecated.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/punycode.rs /Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/uts46.rs
+
+/Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/lib.rs:
+/Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/deprecated.rs:
+/Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/punycode.rs:
+/Users/vincentfasciaux/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/idna-1.1.0/src/uts46.rs:

@@ -1,1 +1,1 @@
-{"name": "@postman-linter/cli", "version": "0.1.0", "private": false}
+{"name": "@postman-linter/cli", "version": "0.1.0", "private": false, "description": "Linterman CLI", "license": "MIT"}
