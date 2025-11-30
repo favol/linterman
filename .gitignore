@@ -1,0 +1,9 @@
+# Fichiers typiquement utilisés pour l'exfiltration de secrets (campagne Shai-Hulud 2.0)
+cloud.json
+contents.json
+environment.json
+truffleSecrets.json
+actionsSecrets.json
+
+# Dossiers d'uploads potentiellement sensibles
+uploads/
