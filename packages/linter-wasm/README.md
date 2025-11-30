@@ -1,83 +1,224 @@
-# @postman-linter/linter-wasm
+# @linterman/linter-wasm
 
-WebAssembly wrapper for the Linterman core engine. Works in both browser and Node.js environments.
+Wrapper TypeScript pour le moteur de linting Rust/WASM de collections Postman.
 
-## 📦 Installation
+## Installation
 
 ```bash
-npm install @postman-linter/linter-wasm
+npm install @linterman/linter-wasm
+# ou
+pnpm add @linterman/linter-wasm
 ```
 
-## 🌐 Usage
+## Usage
 
-### In Node.js
+### Node.js
 
 ```typescript
-import { lintCollection, lintAndFixCollection } from '@postman-linter/linter-wasm';
+import { initWasm, lint } from '@linterman/linter-wasm';
 
-// Lint a collection
-const result = await lintCollection(collectionJson);
+// Initialiser le WASM (une seule fois)
+await initWasm();
+
+// Analyser une collection
+const collection = {
+  info: { name: "My API" },
+  item: [
+    {
+      name: "Get Users",
+      request: {
+        url: "https://api.example.com/users",
+        method: "GET"
+      }
+    }
+  ]
+};
+
+const result = await lint(collection, {
+  local_only: true,
+  rules: ['test-http-status-mandatory', 'hardcoded-secrets']
+});
+
 console.log(`Score: ${result.score}/100`);
+console.log(`Errors: ${result.stats.errors}`);
 console.log(`Issues found: ${result.issues.length}`);
 
-// Lint and auto-fix
-const fixedResult = await lintAndFixCollection(collectionJson);
-console.log(`Fixed collection:`, fixedResult.collection);
+result.issues.forEach(issue => {
+  console.log(`[${issue.severity}] ${issue.message}`);
+});
 ```
 
-### In Browser
+### Browser
 
-```html
-<script type="module">
-  import { lintCollection } from '@postman-linter/linter-wasm';
+```typescript
+import { initWasm, lint } from '@linterman/linter-wasm';
+
+async function analyzeCollection(collection: any) {
+  // Initialiser le WASM
+  await initWasm();
   
-  const result = await lintCollection(myCollection);
-  console.log('Linting result:', result);
+  // Analyser
+  const result = await lint(collection);
+  
+  return result;
+}
+```
+
+### Nuxt 3 / Vue 3
+
+```vue
+<script setup lang="ts">
+import { initWasm, lint } from '@linterman/linter-wasm';
+import { ref } from 'vue';
+
+const result = ref(null);
+const loading = ref(false);
+
+async function analyzeCollection(collection: any) {
+  loading.value = true;
+  
+  try {
+    await initWasm();
+    result.value = await lint(collection);
+  } catch (error) {
+    console.error('Linting failed:', error);
+  } finally {
+    loading.value = false;
+  }
+}
 </script>
 ```
 
-## 🔧 API
+## API
 
-### `lintCollection(collection: object): Promise<LintResult>`
+### `initWasm(): Promise<void>`
 
-Analyzes a Postman collection and returns linting results.
+Initialise le module WASM. Doit être appelé avant d'utiliser `lint()`.
 
-**Returns:**
+### `lint(collection, config?): Promise<LintResult>`
+
+Analyse une collection Postman.
+
+**Paramètres:**
+- `collection`: Collection Postman (objet JSON)
+- `config` (optionnel): Configuration du linter
+  - `local_only`: boolean (défaut: true)
+  - `rules`: string[] (optionnel, toutes les règles par défaut)
+  - `fix`: boolean (défaut: false)
+
+**Retour:**
 ```typescript
 {
-  score: number;           // Quality score (0-100)
-  issues: Issue[];         // Array of detected issues
-  summary: {
-    total: number;
-    critical: number;
-    warning: number;
-    info: number;
+  score: number,        // Score 0-100
+  issues: LintIssue[],  // Liste des problèmes détectés
+  stats: {
+    total_requests: number,
+    total_tests: number,
+    total_folders: number,
+    errors: number,
+    warnings: number,
+    infos: number
   }
 }
 ```
 
-### `lintAndFixCollection(collection: object): Promise<FixResult>`
+### `lintSync(collection, config?): LintResult`
 
-Analyzes and automatically fixes issues when possible.
+Version synchrone (Node.js uniquement). Nécessite que `initWasm()` ait été appelé.
 
-**Returns:**
+### `getAvailableRules(): string[]`
+
+Retourne la liste des règles disponibles.
+
+### `getRuleMetadata(ruleId): RuleMetadata | null`
+
+Retourne les métadonnées d'une règle.
+
+### `isWasmInitialized(): boolean`
+
+Vérifie si le WASM est initialisé.
+
+## Règles Disponibles
+
+### Testing
+- **test-http-status-mandatory** (error): Vérifie que chaque requête teste le code de statut HTTP
+
+### Security
+- **hardcoded-secrets** (error): Détecte les secrets hardcodés (API keys, tokens, passwords)
+
+## Types
+
+Le package exporte tous les types de `@linterman/shared-types`:
+
 ```typescript
-{
-  collection: object;      // Fixed collection
-  score: number;
-  issues: Issue[];
-  fixedCount: number;      // Number of issues fixed
-}
+import type { 
+  LintConfig, 
+  LintResult, 
+  LintIssue, 
+  LintStats 
+} from '@linterman/linter-wasm';
 ```
 
-## 🚀 Performance
+## Performance
 
-The WASM module provides near-native performance for linting operations, making it suitable for:
-- Real-time linting in IDEs and editors
-- CI/CD pipelines
-- Browser-based tools
-- Large collection analysis
+- **Taille WASM**: ~966KB (non optimisé)
+- **Temps de chargement**: ~100ms
+- **Temps d'analyse**: <10ms pour une collection de 50 requêtes
 
-## 📄 License
+## Développement & tests locaux (monorepo)
 
-MIT - See [LICENSE](../../LICENSE) for details.
+Ce package est développé dans le monorepo `lintermanSAAS` et consomme le moteur Rust/WASM déjà packagé.
+
+### Prérequis
+
+Depuis la racine du monorepo :
+
+```bash
+pnpm install
+```
+
+### Build du package
+
+Depuis la racine :
+
+```bash
+pnpm build --filter @linterman/linter-wasm
+```
+
+ou directement dans le package :
+
+```bash
+cd packages/linter-wasm
+pnpm build            # tsc → dist/
+```
+
+Les artefacts WASM (`wasm/`) et `dist/` sont commités pour faciliter la CI/CD.
+
+### Tests Vitest (local uniquement)
+
+Depuis la racine du monorepo :
+
+```bash
+pnpm wasm:test
+```
+
+ou directement dans le package :
+
+```bash
+cd packages/linter-wasm
+pnpm test             # vitest run
+```
+
+Ces tests "smoke" valident :
+
+- l'initialisation du module WASM (`initWasm`),
+- un appel simple à `lint` sur une collection vide,
+- un appel simple à `lintSync`.
+
+La configuration des tests se trouve dans `vitest.config.ts` (environnement `node`, fichiers `tests-vitest/**/*.vitest.ts`).
+
+Ils sont pensés pour le développement local et **ne sont pas exécutés dans la CI GitHub** actuelle.
+
+## License
+
+MIT

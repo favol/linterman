@@ -1,5 +1,5 @@
 {
-  "name": "@postman-linter/linter-wasm",
+  "name": "@linterman/linter-wasm",
   "version": "1.0.0",
   "type": "module",
   "private": false,
@@ -31,8 +31,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "npm run copy-wasm && tsc",
-    "copy-wasm": "mkdir -p wasm && cp -r ../core-linter-rs/pkg-node/* wasm/",
+    "build": "tsc",
+    "copy-wasm": "echo 'copy-wasm skipped (prebuilt wasm assets used)'",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -40,11 +40,11 @@
     "clean": "rm -rf dist wasm"
   },
   "dependencies": {
-    "@postman-linter/shared-types": "workspace:*"
+    "@linterman/shared-types": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
     "typescript": "^5.3.3",
-    "vitest": "^1.0.4"
+    "vitest": "^1.6.0"
   }
 }

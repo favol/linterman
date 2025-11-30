@@ -1,5 +1,5 @@
-import type { LintConfig, LintResult } from '@postman-linter/shared-types';
-export type { LintConfig, LintResult, LintIssue, LintStats } from '@postman-linter/shared-types';
+import type { LintConfig, LintResult } from '@linterman/shared-types';
+export type { LintConfig, LintResult, LintIssue, LintStats } from '@linterman/shared-types';
 /**
  * Initialise le module WASM
  * Doit être appelé avant d'utiliser lint()
@@ -18,7 +18,7 @@ export declare function isWasmInitialized(): boolean;
  *
  * @example
  * ```typescript
- * import { initWasm, lint } from '@postman-linter/linter-wasm';
+ * import { initWasm, lint } from '@linterman/linter-wasm';
  *
  * await initWasm();
  *
@@ -56,7 +56,7 @@ export declare function lintSync(collection: unknown, config?: Partial<LintConfi
  *
  * @example
  * ```typescript
- * import { initWasm, lintAndFix } from '@postman-linter/linter-wasm';
+ * import { initWasm, lintAndFix } from '@linterman/linter-wasm';
  *
  * await initWasm();
  *

@@ -17,8 +17,5 @@
     "types": ["node"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "wasm"],
-  "references": [
-    { "path": "../shared-types" }
-  ]
+  "exclude": ["node_modules", "dist", "wasm"]
 }

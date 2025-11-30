@@ -1,4 +1,4 @@
-import { LintConfigSchema, LintResultSchema } from '@postman-linter/shared-types';
+import { LintConfigSchema, LintResultSchema } from '@linterman/shared-types';
 // ============================================================================
 // WASM Loader
 // ============================================================================
@@ -49,7 +49,7 @@ export function isWasmInitialized() {
  *
  * @example
  * ```typescript
- * import { initWasm, lint } from '@postman-linter/linter-wasm';
+ * import { initWasm, lint } from '@linterman/linter-wasm';
  *
  * await initWasm();
  *
@@ -137,7 +137,7 @@ export function lintSync(collection, config = {}) {
  *
  * @example
  * ```typescript
- * import { initWasm, lintAndFix } from '@postman-linter/linter-wasm';
+ * import { initWasm, lintAndFix } from '@linterman/linter-wasm';
  *
  * await initWasm();
  *

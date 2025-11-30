@@ -1,11 +1,11 @@
-import type { LintConfig, LintResult } from '@postman-linter/shared-types';
-import { LintConfigSchema, LintResultSchema } from '@postman-linter/shared-types';
+import type { LintConfig, LintResult } from '@linterman/shared-types';
+import { LintConfigSchema, LintResultSchema } from '@linterman/shared-types';
 
 // ============================================================================
 // Types
 // ============================================================================
 
-export type { LintConfig, LintResult, LintIssue, LintStats } from '@postman-linter/shared-types';
+export type { LintConfig, LintResult, LintIssue, LintStats } from '@linterman/shared-types';
 
 interface WasmModule {
   lint(collection_json: string, config_json: string): string;
@@ -70,7 +70,7 @@ export function isWasmInitialized(): boolean {
  * 
  * @example
  * ```typescript
- * import { initWasm, lint } from '@postman-linter/linter-wasm';
+ * import { initWasm, lint } from '@linterman/linter-wasm';
  * 
  * await initWasm();
  * 
@@ -171,7 +171,7 @@ export function lintSync(
  * 
  * @example
  * ```typescript
- * import { initWasm, lintAndFix } from '@postman-linter/linter-wasm';
+ * import { initWasm, lintAndFix } from '@linterman/linter-wasm';
  * 
  * await initWasm();
  * 
