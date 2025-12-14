@@ -10,11 +10,12 @@ use serde_json::Value;
 // Types
 // ============================================================================
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct LintConfig {
     pub local_only: bool,
     pub rules: Option<Vec<String>>,
     pub fix: Option<bool>,
+    pub custom_templates: Option<std::collections::HashMap<String, String>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -96,7 +97,11 @@ pub fn run_linter(collection: &Value, config: &LintConfig) -> LintResult {
     
     // Documentation rules
     if enabled_rules.is_none() || enabled_rules.unwrap().contains(&"collection-overview-template".to_string()) {
-        issues.extend(rules::documentation::collection_overview_template::check(collection));
+        // Pass custom template config if available
+        let template_config = config.custom_templates.as_ref()
+            .and_then(|t| t.get("collection-overview-template"))
+            .cloned();
+        issues.extend(rules::documentation::collection_overview_template::check_with_config(collection, template_config));
     }
     
     if enabled_rules.is_none() || enabled_rules.unwrap().contains(&"request-examples-required".to_string()) {

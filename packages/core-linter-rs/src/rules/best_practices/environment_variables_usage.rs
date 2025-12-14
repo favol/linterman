@@ -57,7 +57,7 @@ fn check_items(items: &[Value], issues: &mut Vec<LintIssue>, parent_path: &str) 
                     rule_id: "environment-variables-usage".to_string(),
                     severity: "warning".to_string(),
                     message: format!(
-                        "🔧 Requête \"{}\" : utiliser une variable d'environnement pour l'URL (ex: {{{{base_url}}}})",
+                        "🔧 Request \"{}\" should use an environment variable for the URL (ex: {{{{base_url}}}})",
                         item_name
                     ),
                     path: format!("{}/request/url", current_path),
@@ -115,7 +115,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("variable d'environnement"));
+        assert!(issues[0].message.contains("environment variable"));
     }
 
     #[test]

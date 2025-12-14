@@ -1,32 +1,78 @@
 use crate::LintIssue;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
+
+/// Configuration du template personnalisable
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TemplateConfig {
+    #[serde(rename = "requiredSections")]
+    pub required_sections: Vec<SectionConfig>,
+    #[serde(rename = "requiredMetadata")]
+    pub required_metadata: Vec<String>,
+    #[serde(rename = "minLength")]
+    pub min_length: usize,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SectionConfig {
+    pub name: String,
+    pub patterns: Vec<String>,
+}
+
+impl Default for TemplateConfig {
+    fn default() -> Self {
+        TemplateConfig {
+            required_sections: vec![
+                SectionConfig {
+                    name: "Prérequis".to_string(),
+                    patterns: vec!["prérequis".to_string(), "prerequis".to_string(), "requirements".to_string(), "pré-requis".to_string()],
+                },
+                SectionConfig {
+                    name: "Présentation".to_string(),
+                    patterns: vec!["présentation".to_string(), "presentation".to_string(), "description".to_string(), "overview".to_string()],
+                },
+                SectionConfig {
+                    name: "Mode d'emploi".to_string(),
+                    patterns: vec!["mode d'emploi".to_string(), "mode d emploi".to_string(), "utilisation".to_string(), "usage".to_string(), "how to use".to_string(), "instructions".to_string()],
+                },
+                SectionConfig {
+                    name: "Reste à faire".to_string(),
+                    patterns: vec!["reste à faire".to_string(), "todo".to_string(), "à faire".to_string(), "remaining".to_string(), "next steps".to_string()],
+                },
+            ],
+            required_metadata: vec!["Référent".to_string(), "Version de collection".to_string()],
+            min_length: 100,
+        }
+    }
+}
 
 /// Règle : collection-overview-template
 /// 
-/// Vérifie que l'Overview de la collection respecte le template fixe.
-/// Template en dur (paramétrable plus tard) :
-/// - Sections requises : Prérequis, Présentation, Mode d'emploi, Reste à faire
-/// - Métadonnées requises : Référent, Version de collection
+/// Vérifie que l'Overview de la collection respecte le template.
+/// Le template peut être personnalisé via la configuration.
 /// 
 /// Sévérité : ERROR (-15%)
 pub fn check(collection: &Value) -> Vec<LintIssue> {
+    check_with_config(collection, None)
+}
+
+/// Version avec configuration personnalisable
+pub fn check_with_config(collection: &Value, config_json: Option<String>) -> Vec<LintIssue> {
     let mut issues = Vec::new();
+    
+    // Parse custom config or use default
+    let config: TemplateConfig = config_json
+        .and_then(|json| serde_json::from_str(&json).ok())
+        .unwrap_or_default();
     
     let description = collection["info"]["description"]
         .as_str()
         .unwrap_or("");
     
-    // Vérifier les sections obligatoires
-    let required_sections = vec![
-        ("Prérequis", vec!["prérequis", "prerequis", "requirements", "pré-requis"]),
-        ("Présentation", vec!["présentation", "presentation", "description", "overview"]),
-        ("Mode d'emploi", vec!["mode d'emploi", "mode d emploi", "utilisation", "usage", "how to use", "instructions"]),
-        ("Reste à faire", vec!["reste à faire", "todo", "à faire", "remaining", "next steps"]),
-    ];
-    
-    for (section_name, patterns) in required_sections {
-        let has_section = patterns.iter().any(|pattern| {
+    // Vérifier les sections obligatoires (from config)
+    for section in &config.required_sections {
+        let has_section = section.patterns.iter().any(|pattern| {
             description.to_lowercase().contains(&pattern.to_lowercase())
         });
         
@@ -34,7 +80,7 @@ pub fn check(collection: &Value) -> Vec<LintIssue> {
             issues.push(LintIssue {
                 rule_id: "collection-overview-template".to_string(),
                 severity: "error".to_string(),
-                message: format!("❌ Section de documentation manquante : \"{}\"", section_name),
+                message: format!("❌ Section de documentation manquante : \"{}\"", section.name),
                 path: "/info/description".to_string(),
                 line: None,
                 fix: None,
@@ -45,61 +91,61 @@ pub fn check(collection: &Value) -> Vec<LintIssue> {
     // Extraire les métadonnées
     let metadata = extract_collection_metadata(description);
     
-    // Vérifier la présence des colonnes dans la documentation
-    let has_referent_column = Regex::new(r"(?i)référent").unwrap().is_match(description) &&
-        (Regex::new(r"(?i)\|.*référent.*\|").unwrap().is_match(description) ||
-         Regex::new(r"(?i)référent\s*:").unwrap().is_match(description));
-    
-    let has_version_column = Regex::new(r"(?i)version.*collection").unwrap().is_match(description) &&
-        (Regex::new(r"(?i)\|.*version.*collection.*\|").unwrap().is_match(description) ||
-         Regex::new(r"(?i)version.*collection\s*:").unwrap().is_match(description));
-    
-    if !has_referent_column {
-        issues.push(LintIssue {
-            rule_id: "collection-documentation-structure".to_string(),
-            severity: "error".to_string(),
-            message: "👤 Tableau de documentation manquant : colonne \"Référent\" non présente".to_string(),
-            path: "/info/description".to_string(),
-            line: None,
-            fix: None,
-        });
-    } else if metadata.referent.is_none() {
-        issues.push(LintIssue {
-            rule_id: "collection-documentation-structure".to_string(),
-            severity: "error".to_string(),
-            message: "👤 Référent manquant : la colonne \"Référent\" est présente mais vide".to_string(),
-            path: "/info/description".to_string(),
-            line: None,
-            fix: None,
-        });
+    // Vérifier les métadonnées requises (from config)
+    for meta_name in &config.required_metadata {
+        let meta_lower = meta_name.to_lowercase();
+        
+        // Check if metadata column/field is present
+        let has_column = if meta_lower.contains("référent") || meta_lower.contains("referent") {
+            Regex::new(r"(?i)référent").unwrap().is_match(description) &&
+                (Regex::new(r"(?i)\|.*référent.*\|").unwrap().is_match(description) ||
+                 Regex::new(r"(?i)référent\s*:").unwrap().is_match(description))
+        } else if meta_lower.contains("version") {
+            Regex::new(r"(?i)version.*collection").unwrap().is_match(description) &&
+                (Regex::new(r"(?i)\|.*version.*collection.*\|").unwrap().is_match(description) ||
+                 Regex::new(r"(?i)version.*collection\s*:").unwrap().is_match(description))
+        } else {
+            // Generic check for other metadata
+            let pattern = format!(r"(?i){}", regex::escape(&meta_lower));
+            Regex::new(&pattern).map(|re| re.is_match(description)).unwrap_or(false)
+        };
+        
+        // Check if metadata has a value
+        let has_value = if meta_lower.contains("référent") || meta_lower.contains("referent") {
+            metadata.referent.is_some()
+        } else if meta_lower.contains("version") {
+            metadata.collection_version.is_some()
+        } else {
+            has_column // For generic metadata, just check presence
+        };
+        
+        if !has_column {
+            issues.push(LintIssue {
+                rule_id: "collection-documentation-structure".to_string(),
+                severity: "error".to_string(),
+                message: format!("� Métadonnée manquante : \"{}\" non présente dans la documentation", meta_name),
+                path: "/info/description".to_string(),
+                line: None,
+                fix: None,
+            });
+        } else if !has_value {
+            issues.push(LintIssue {
+                rule_id: "collection-documentation-structure".to_string(),
+                severity: "error".to_string(),
+                message: format!("📋 Métadonnée incomplète : \"{}\" est présente mais vide", meta_name),
+                path: "/info/description".to_string(),
+                line: None,
+                fix: None,
+            });
+        }
     }
     
-    if !has_version_column {
+    // Vérifier la longueur minimale (from config)
+    if description.len() < config.min_length {
         issues.push(LintIssue {
             rule_id: "collection-documentation-structure".to_string(),
             severity: "error".to_string(),
-            message: "🔢 Tableau de documentation manquant : colonne \"Version de collection\" non présente".to_string(),
-            path: "/info/description".to_string(),
-            line: None,
-            fix: None,
-        });
-    } else if metadata.collection_version.is_none() {
-        issues.push(LintIssue {
-            rule_id: "collection-documentation-structure".to_string(),
-            severity: "error".to_string(),
-            message: "🔢 Version de collection manquante : la colonne \"Version de collection\" est présente mais vide".to_string(),
-            path: "/info/description".to_string(),
-            line: None,
-            fix: None,
-        });
-    }
-    
-    // Vérifier la longueur minimale
-    if description.len() < 100 {
-        issues.push(LintIssue {
-            rule_id: "collection-documentation-structure".to_string(),
-            severity: "error".to_string(),
-            message: "📝 Description de collection trop courte (minimum 100 caractères requis)".to_string(),
+            message: format!("📝 Description de collection trop courte (minimum {} caractères requis)", config.min_length),
             path: "/info/description".to_string(),
             line: None,
             fix: None,

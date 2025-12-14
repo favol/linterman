@@ -48,7 +48,7 @@ fn check_items(items: &[Value], issues: &mut Vec<LintIssue>, parent_path: &str) 
                                 rule_id: "response-time-threshold".to_string(),
                                 severity: "warning".to_string(),
                                 message: format!(
-                                    "⏱️ Requête \"{}\" : seuil de temps de réponse trop élevé ({}ms > 2000ms recommandé)",
+                                    "⏱️ Request \"{}\" has response time threshold too high ({}ms > 2000ms recommended)",
                                     item_name, threshold
                                 ),
                                 path: current_path.clone(),
@@ -129,6 +129,6 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("seuil de temps de réponse trop élevé"));
+        assert!(issues[0].message.contains("threshold too high"));
     }
 }

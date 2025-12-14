@@ -49,7 +49,7 @@ fn check_request_documentation(item: &Value, issues: &mut Vec<LintIssue>, path: 
         issues.push(LintIssue {
             rule_id: "request-examples-required".to_string(),
             severity: "error".to_string(),
-            message: format!("📋 Requête \"{}\" sans exemples de réponse", item_name),
+            message: format!("📋 Request \"{}\" has no response examples", item_name),
             path: path.to_string(),
             line: None,
             fix: None,
@@ -63,7 +63,7 @@ fn check_request_documentation(item: &Value, issues: &mut Vec<LintIssue>, path: 
                     rule_id: "documentation-completeness".to_string(),
                     severity: "error".to_string(),
                     message: format!(
-                        "🏷️ Exemple #{} pour \"{}\" : nom manquant",
+                        "🏷️ Example #{} for \"{}\" is missing name",
                         resp_index + 1,
                         item_name
                     ),
@@ -89,7 +89,7 @@ fn check_request_documentation(item: &Value, issues: &mut Vec<LintIssue>, path: 
                     rule_id: "documentation-completeness".to_string(),
                     severity: "error".to_string(),
                     message: format!(
-                        "📄 Exemple #{} pour \"{}\" : contenu manquant",
+                        "📄 Example #{} for \"{}\" is missing content",
                         resp_index + 1,
                         item_name
                     ),
@@ -119,7 +119,7 @@ fn check_request_documentation(item: &Value, issues: &mut Vec<LintIssue>, path: 
                 rule_id: "documentation-completeness".to_string(),
                 severity: "error".to_string(),
                 message: format!(
-                    "📝 Requête \"{}\" → paramètres non documentés : {}",
+                    "📝 Request \"{}\" has undocumented parameters: {}",
                     item_name,
                     undocumented_params.join(", ")
                 ),
@@ -181,7 +181,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("sans exemples de réponse"));
+        assert!(issues[0].message.contains("has no response examples"));
     }
 
     #[test]
@@ -203,7 +203,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("nom manquant"));
+        assert!(issues[0].message.contains("is missing name"));
     }
 
     #[test]
@@ -225,7 +225,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("contenu manquant"));
+        assert!(issues[0].message.contains("is missing content"));
     }
 
     #[test]
@@ -283,7 +283,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("paramètres non documentés"));
+        assert!(issues[0].message.contains("has undocumented parameters"));
         assert!(issues[0].message.contains("offset"));
     }
 }

@@ -148,14 +148,14 @@ fn check_request_tests(item: &Value, issues: &mut Vec<LintIssue>, path: &str, it
                         
                         let suggestion = if path_variables.is_empty() {
                             format!(
-                                "inclure un segment du chemin (ex: \"{}\") ou utiliser la variable location/requestName",
+                                "include a path segment (ex: \"{}\") or use the location/requestName variable",
                                 suggested_path
                             )
                         } else {
                             format!(
-                                "inclure un segment du chemin (ex: \"{}\") ou utiliser la variable {}",
+                                "include a path segment (ex: \"{}\") or use the {} variable",
                                 suggested_path,
-                                path_variables.join(" ou ")
+                                path_variables.join(" or ")
                             )
                         };
                         
@@ -166,7 +166,7 @@ fn check_request_tests(item: &Value, issues: &mut Vec<LintIssue>, path: &str, it
                             rule_id: "test-description-with-uri".to_string(),
                             severity: "error".to_string(),
                             message: format!(
-                                "🎯 Test \"{}\" dans \"{}\" devrait {}",
+                                "🎯 Test \"{}\" in \"{}\" should {}",
                                 test_description, item_name, suggestion
                             ),
                             path: path.to_string(),
@@ -343,7 +343,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("devrait inclure"));
+        assert!(issues[0].message.contains("should include"));
     }
 
     #[test]

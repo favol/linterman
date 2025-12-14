@@ -118,7 +118,7 @@ fn check_request_response_time(
         issues.push(LintIssue {
             rule_id: "test-response-time-mandatory".to_string(),
             severity: "warning".to_string(),
-            message: format!("⏱️ Requête \"{}\" : test de temps de réponse manquant", item_name),
+            message: format!("⏱️ Request \"{}\" is missing response time test", item_name),
             path: path.to_string(),
             line: None,
             fix: Some(serde_json::json!({
@@ -186,7 +186,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("temps de réponse manquant"));
+        assert!(issues[0].message.contains("is missing response time test"));
     }
 
     #[test]

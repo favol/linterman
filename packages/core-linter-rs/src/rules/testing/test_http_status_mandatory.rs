@@ -53,7 +53,7 @@ fn check_items(items: &[Value], regex: &Regex, issues: &mut Vec<LintIssue>, pare
                 issues.push(LintIssue {
                     rule_id: "test-http-status-mandatory".to_string(),
                     severity: "error".to_string(),
-                    message: format!("La requête '{}' ne teste pas le code de statut HTTP", item_name),
+                    message: format!("Request '{}' does not test the HTTP status code", item_name),
                     path: current_path.clone(),
                     line: None,
                     fix: Some(serde_json::json!({

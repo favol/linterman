@@ -21,7 +21,7 @@ pub fn check(collection: &Value) -> Vec<LintIssue> {
                 rule_id: "test-coverage-minimum".to_string(),
                 severity: "warning".to_string(),
                 message: format!(
-                    "📊 Couverture de tests insuffisante : {:.1}% ({}/{} requêtes testées). Minimum recommandé : 80%",
+                    "📊 Insufficient test coverage: {:.1}% ({}/{} requests tested). Recommended minimum: 80%",
                     coverage_percent, requests_with_tests, total_requests
                 ),
                 path: "/".to_string(),
@@ -134,6 +134,6 @@ mod tests {
         let issues = check(&collection);
         // 20% coverage (1/5)
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("Couverture de tests insuffisante"));
+        assert!(issues[0].message.contains("Insufficient test coverage"));
     }
 }

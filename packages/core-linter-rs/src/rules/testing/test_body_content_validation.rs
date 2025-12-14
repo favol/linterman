@@ -152,7 +152,7 @@ fn check_request_body_validation(
             rule_id: "test-body-content-validation".to_string(),
             severity: "warning".to_string(),
             message: format!(
-                "⚠️ Requête \"{}\" : recommandé de valider le contenu de la réponse (body, propriétés, schéma)",
+                "⚠️ Request \"{}\" should validate response content (body, properties, schema)",
                 item_name
             ),
             path: path.to_string(),
@@ -223,7 +223,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("valider le contenu"));
+        assert!(issues[0].message.contains("should validate response content"));
     }
 
     #[test]

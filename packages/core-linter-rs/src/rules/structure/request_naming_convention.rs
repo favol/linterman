@@ -43,7 +43,7 @@ fn check_items(items: &[Value], issues: &mut Vec<LintIssue>, parent_path: &str) 
                     rule_id: "request-naming-convention".to_string(),
                     severity: "warning".to_string(),
                     message: format!(
-                        "📝 Requête \"{}\" : le nom devrait commencer par la méthode HTTP (ex: \"{} {}\")",
+                        "📝 Request \"{}\" should start with the HTTP method (ex: \"{} {}\")",
                         item_name, method, item_name
                     ),
                     path: current_path.clone(),
@@ -100,7 +100,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("devrait commencer par la méthode HTTP"));
+        assert!(issues[0].message.contains("should start with the HTTP method"));
     }
 
     #[test]

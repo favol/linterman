@@ -132,7 +132,7 @@ fn check_request_schema_validation(
             rule_id: "test-schema-validation-recommended".to_string(),
             severity: "warning".to_string(),
             message: format!(
-                "🛡️ Requête \"{}\" : validation de schéma JSON recommandée pour améliorer la robustesse des tests",
+                "🛡️ Request \"{}\" should use JSON schema validation to improve test robustness",
                 item_name
             ),
             path: path.to_string(),
@@ -203,7 +203,7 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("validation de schéma"));
+        assert!(issues[0].message.contains("schema validation"));
     }
 
     #[test]
@@ -295,6 +295,6 @@ mod tests {
         
         let issues = check(&collection);
         assert_eq!(issues.len(), 1);
-        assert!(issues[0].message.contains("validation de schéma"));
+        assert!(issues[0].message.contains("schema validation"));
     }
 }
