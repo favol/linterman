@@ -4,12 +4,20 @@
 
 set -e
 
-echo "🔨 Compilation du WASM avec wasm-pack..."
+echo "🔨 Compilation du WASM pour Node.js (Backend/CLI)..."
 wasm-pack build --target nodejs --out-dir pkg-node --release
 
-echo "📦 Copie du WASM vers les emplacements requis..."
+echo "🔨 Compilation du WASM pour le Web (Frontend)..."
+wasm-pack build --target web --out-dir pkg-web --release
+
+echo "📦 Copie du WASM Node.js vers les emplacements requis..."
 cp pkg-node/postman_linter_core_bg.wasm ../linter-wasm/postman_linter_core_bg.wasm
 cp pkg-node/postman_linter_core_bg.wasm ../linter-wasm/wasm/postman_linter_core_bg.wasm
 cp pkg-node/postman_linter_core_bg.wasm ../linter-wasm/wasm/linter_bg.wasm
 
-echo "✅ WASM compilé et copié avec succès !"
+echo "📦 Préparation du package Web..."
+mkdir -p ../frontend/public/wasm
+cp pkg-web/postman_linter_core_bg.wasm ../frontend/public/wasm/
+cp pkg-web/postman_linter_core.js ../frontend/public/wasm/
+
+echo "✅ WASM compilé (Node + Web) et copié avec succès !"
